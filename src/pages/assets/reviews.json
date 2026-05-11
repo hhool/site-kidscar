@@ -1,0 +1,41 @@
+[
+  {
+    "slug": "sample-compact-stroller-2026",
+    "title_zh": "Sample 轻便折叠童车 2026 评测",
+    "title_en": "Sample Compact Stroller 2026 Review",
+    "summary_zh": "该车型在轻便与收纳方面表现良好，适合城市通勤和短途出行。",
+    "summary_en": "This model performs well in portability and folding convenience, suitable for city commuting and short trips.",
+    "age_range": "6 months - 4 years",
+    "weight_range": "0-22kg",
+    "source_url": "https://example.com/sample-compact-stroller-spec",
+    "source_note": "Manufacturer spec page snapshot and manual PDF",
+    "needs_verification": true,
+    "verified_at": "2026-05-12"
+  },
+  {
+    "slug": "trail-pro-x-2026",
+    "title_zh": "Trail Pro X 全地形童车评测",
+    "title_en": "Trail Pro X All-Terrain Stroller Review",
+    "summary_zh": "Trail Pro X 在碎石和草地路段表现稳定，避震能力突出，但车身更重。",
+    "summary_en": "Trail Pro X stays stable on gravel and grass with strong suspension, but it is heavier to carry.",
+    "age_range": "0 - 4 years",
+    "weight_range": "0-25kg",
+    "source_url": "https://example.com/trail-pro-x-spec",
+    "source_note": "Official product brochure and distributor FAQ",
+    "needs_verification": false,
+    "verified_at": "2026-05-12"
+  },
+  {
+    "slug": "urban-lite-360-2026",
+    "title_zh": "Urban Lite 360 城市轻便童车评测",
+    "title_en": "Urban Lite 360 City Stroller Review",
+    "summary_zh": "Urban Lite 360 在城市路面推行顺滑，折叠后体积小，适合高频通勤家庭。",
+    "summary_en": "Urban Lite 360 is smooth on city roads and folds into a compact size, ideal for frequent commuting families.",
+    "age_range": "6 months - 4 years",
+    "weight_range": "0-22kg",
+    "source_url": "https://example.com/urban-lite-360-spec",
+    "source_note": "Brand specification page and user manual",
+    "needs_verification": true,
+    "verified_at": "2026-05-12"
+  }
+]

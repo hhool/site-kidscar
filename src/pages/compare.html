@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>车型对比 | Site Kidscar</title>
+  <style>
+    body { margin: 0; font-family: "Segoe UI", "PingFang SC", sans-serif; background: #f7f9fd; color: #1f2733; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 18px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #dbe2f1; }
+    th, td { border: 1px solid #dbe2f1; padding: 10px; text-align: left; }
+    th { background: #edf3ff; }
+    #app-error { margin-top: 12px; color: #b42318; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>童车对比示例</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th id="head-a">A</th>
+          <th id="head-b">B</th>
+        </tr>
+      </thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+    <p id="app-error"></p>
+  </main>
+  <script src="assets/app.js"></script>
+</body>
+</html>

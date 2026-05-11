@@ -1,0 +1,43 @@
+name: site-kidscar-validate
+
+on:
+  push:
+    paths:
+      - "site-kidscar/**"
+  pull_request:
+    paths:
+      - "site-kidscar/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site-kidscar
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh e2e/*.sh
+
+      - name: Validate review JSON files
+        run: |
+          for file in data/reviews/*.json; do
+            ./scripts/validate-review-json.sh "$file"
+          done
+
+      - name: Build frontend reviews data
+        run: ./scripts/build-reviews-json.sh
+
+      - name: Audit review quality
+        run: ./scripts/audit-reviews.sh
+
+      - name: Run smoke checks
+        run: ./e2e/smoke-http-check.sh

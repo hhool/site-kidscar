@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://site-kidscar.local/schema/review-item.schema.json",
+  "title": "ReviewItem",
+  "type": "object",
+  "required": [
+    "slug",
+    "title_zh",
+    "title_en",
+    "summary_zh",
+    "summary_en",
+    "source_url",
+    "verified_at"
+  ],
+  "properties": {
+    "slug": {
+      "type": "string",
+      "minLength": 3
+    },
+    "title_zh": {
+      "type": "string",
+      "minLength": 5
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 5
+    },
+    "summary_zh": {
+      "type": "string",
+      "minLength": 10
+    },
+    "summary_en": {
+      "type": "string",
+      "minLength": 10
+    },
+    "age_range": {
+      "type": "string"
+    },
+    "weight_range": {
+      "type": "string"
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "source_note": {
+      "type": "string"
+    },
+    "needs_verification": {
+      "type": "boolean",
+      "default": false
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "additionalProperties": true
+}
