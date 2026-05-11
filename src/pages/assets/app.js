@@ -18,23 +18,54 @@ function bySlug(items, slug) {
 function renderIndex(items) {
   const list = document.getElementById("review-list");
   if (!list) return;
-  list.innerHTML = items
-    .map((item) => {
-      const detailHref = `review-detail.html?slug=${encodeURIComponent(item.slug)}`;
-      const compareHref = `compare.html?a=${encodeURIComponent(item.slug)}&b=sample-compact-stroller-2026`;
-      return `
-        <article class="card">
-          <h3>${item.title_zh}</h3>
-          <p>${item.summary_zh}</p>
-          <p class="meta">${item.age_range} | ${item.weight_range}</p>
-          <div class="actions">
-            <a class="btn" href="${detailHref}">查看详情</a>
-            <a class="btn secondary" href="${compareHref}">加入对比</a>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+
+  function buildCards(filtered) {
+    const noResults = document.getElementById("no-results");
+    if (filtered.length === 0) {
+      list.innerHTML = "";
+      if (noResults) noResults.style.display = "block";
+      return;
+    }
+    if (noResults) noResults.style.display = "none";
+    list.innerHTML = filtered
+      .map((item) => {
+        const detailHref = `review-detail.html?slug=${encodeURIComponent(item.slug)}`;
+        const compareHref = `compare.html?a=${encodeURIComponent(item.slug)}&b=sample-compact-stroller-2026`;
+        return `
+          <article class="card">
+            <h3>${item.title_zh}</h3>
+            <p>${item.summary_zh}</p>
+            <p class="meta">${item.age_range} | ${item.weight_range}</p>
+            <div class="actions">
+              <a class="btn" href="${detailHref}">查看详情</a>
+              <a class="btn secondary" href="${compareHref}">加入对比</a>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  function applyFilters() {
+    const query = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
+    const ageFilter = document.getElementById("filter-age")?.value || "";
+    const filtered = items.filter((item) => {
+      const matchText = !query ||
+        item.title_zh.toLowerCase().includes(query) ||
+        item.summary_zh.toLowerCase().includes(query) ||
+        (item.title_en && item.title_en.toLowerCase().includes(query));
+      const matchAge = !ageFilter || item.age_range === ageFilter;
+      return matchText && matchAge;
+    });
+    buildCards(filtered);
+  }
+
+  buildCards(items);
+
+  const searchInput = document.getElementById("search-input");
+  const filterAge = document.getElementById("filter-age");
+  if (searchInput) searchInput.addEventListener("input", applyFilters);
+  if (filterAge) filterAge.addEventListener("change", applyFilters);
 }
 
 function renderDetail(items) {

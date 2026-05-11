@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Site Kidscar | 全球童车评测</title>
+  <meta name="description" content="全球童车评测平台：聚焦安全、操控、便携与性价比，提供可追溯的评测数据与导购建议。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Site Kidscar | 全球童车评测" />
+  <meta property="og:description" content="全球童车评测平台：聚焦安全、操控、便携与性价比，提供可追溯的评测数据与导购建议。" />
+  <meta property="og:url" content="https://www.site-kidscar.com/" />
+  <meta property="og:site_name" content="Site Kidscar" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Site Kidscar | 全球童车评测" />
+  <meta name="twitter:description" content="全球童车评测平台：聚焦安全、操控、便携与性价比，提供可追溯的评测数据与导购建议。" />
+  <link rel="canonical" href="https://www.site-kidscar.com/" />
   <style>
     :root {
       --bg: #f5f7fb;
@@ -51,6 +61,17 @@
     }
     .btn.secondary { background: #2d6bcb; }
     #app-error { margin-top: 14px; color: #b42318; }
+    .search-bar { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .search-bar input, .search-bar select {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      background: var(--card);
+      color: var(--text);
+    }
+    .search-bar input { flex: 1; min-width: 180px; }
+    #no-results { color: var(--muted); margin-top: 14px; display: none; }
   </style>
 </head>
 <body>
@@ -59,7 +80,17 @@
       <h1>全球童车评测平台</h1>
       <p>聚焦安全、操控、便携与性价比，提供可追溯的评测数据与导购建议。</p>
     </section>
+    <div class="search-bar">
+      <input type="search" id="search-input" placeholder="搜索车型名称…" aria-label="搜索车型" />
+      <select id="filter-age" aria-label="按适用年龄筛选">
+        <option value="">全部年龄段</option>
+        <option value="0-6m">0–6 个月</option>
+        <option value="0-3y">0–3 岁</option>
+        <option value="6m-4y">6 个月–4 岁</option>
+      </select>
+    </div>
     <section id="review-list" class="grid"></section>
+    <p id="no-results">没有符合条件的评测结果。</p>
     <p id="app-error"></p>
   </div>
   <script src="assets/app.js"></script>
