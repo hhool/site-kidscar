@@ -1,0 +1,3 @@
+# Cloudflare Pages redirect rules
+# SPA fallback: all unmatched paths → index.html
+/*    /index.html   200

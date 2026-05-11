@@ -41,3 +41,16 @@ jobs:
 
       - name: Run smoke checks
         run: ./e2e/smoke-http-check.sh
+
+      - name: Verify Cloudflare Pages config
+        run: |
+          test -f src/pages/_redirects && echo "_redirects OK" || (echo "_redirects missing" && exit 1)
+          test -f src/pages/_headers   && echo "_headers OK"   || (echo "_headers missing" && exit 1)
+
+      - name: Verify Vercel config
+        run: |
+          test -f vercel.json && echo "vercel.json OK" || (echo "vercel.json missing" && exit 1)
+
+      - name: Verify package.json scripts
+        run: |
+          node -e "const p=require('./package.json'); ['build','audit','validate','serve','smoke','preflight'].forEach(s=>{ if(!p.scripts[s]) throw new Error('missing script: '+s); }); console.log('package.json scripts OK');"

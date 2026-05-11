@@ -1,0 +1,17 @@
+{
+  "name": "site-kidscar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Global stroller review site — Phase 1",
+  "scripts": {
+    "build": "bash scripts/build-reviews-json.sh",
+    "audit": "bash scripts/audit-reviews.sh",
+    "validate": "bash scripts/validate-review-json.sh",
+    "serve": "bash scripts/serve-pages.sh",
+    "smoke": "bash e2e/smoke-http-check.sh",
+    "preflight": "npm run build && npm run audit && npm run validate"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
