@@ -15,6 +15,11 @@
   <meta name="twitter:description" content="全球童车评测平台：聚焦安全、操控、便携与性价比，提供可追溯的评测数据与导购建议。" />
   <link rel="canonical" href="https://www.site-kidscar.com/" />
   <style>
+    nav.site-nav { background:#0d8bff; color:#fff; padding:10px 20px; display:flex; align-items:center; gap:18px; }
+    nav.site-nav a { color:#fff; text-decoration:none; font-size:15px; }
+    nav.site-nav a:hover { text-decoration:underline; }
+    nav.site-nav .brand { font-weight:700; font-size:17px; margin-right:auto; }
+    footer.site-footer { text-align:center; padding:18px; font-size:12px; color:#7a869d; border-top:1px solid #dde4f2; margin-top:32px; }
     :root {
       --bg: #f5f7fb;
       --card: #ffffff;
@@ -75,6 +80,11 @@
   </style>
 </head>
 <body>
+  <nav class="site-nav">
+    <a class="brand" href="index.html">🍼 Site Kidscar</a>
+    <a href="index.html">评测列表</a>
+    <a href="compare.html">车型对比</a>
+  </nav>
   <div class="wrap">
     <section class="hero">
       <h1>全球童车评测平台</h1>
@@ -93,6 +103,7 @@
     <p id="no-results">没有符合条件的评测结果。</p>
     <p id="app-error"></p>
   </div>
+  <footer class="site-footer">© 2026 Site Kidscar · 数据仅供参考，购买前请自行核实。</footer>
   <script src="assets/app.js"></script>
 </body>
 </html>

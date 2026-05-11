@@ -68,6 +68,43 @@ function renderIndex(items) {
   if (filterAge) filterAge.addEventListener("change", applyFilters);
 }
 
+function injectJsonLd(item) {
+  const el = document.getElementById("jsonld");
+  if (!el) return;
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": item.title_en || item.title_zh,
+    "description": item.summary_en || item.summary_zh,
+    "url": `https://www.site-kidscar.com/review/${item.slug}`,
+    "audience": {
+      "@type": "PeopleAudience",
+      "suggestedMinAge": 0,
+      "suggestedMaxAge": 4
+    },
+    "review": {
+      "@type": "Review",
+      "reviewBody": item.summary_zh,
+      "datePublished": item.verified_at || "",
+      "author": { "@type": "Organization", "name": "Site Kidscar" },
+      "publisher": { "@type": "Organization", "name": "Site Kidscar",
+        "url": "https://www.site-kidscar.com" }
+    }
+  };
+  el.textContent = JSON.stringify(schema);
+
+  // Also update <title> and og:title dynamically
+  document.title = `${item.title_zh} | Site Kidscar`;
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.setAttribute("content", `${item.title_zh} | Site Kidscar`);
+  const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+  if (twitterTitle) twitterTitle.setAttribute("content", `${item.title_zh} | Site Kidscar`);
+  const canonical = document.querySelector('link[rel="canonical"]') || document.createElement("link");
+  canonical.rel = "canonical";
+  canonical.href = `https://www.site-kidscar.com/review/${item.slug}`;
+  document.head.appendChild(canonical);
+}
+
 function renderDetail(items) {
   const detailRoot = document.getElementById("detail-root");
   if (!detailRoot) return;
@@ -77,12 +114,19 @@ function renderDetail(items) {
     detailRoot.innerHTML = "<section class=\"card\"><h1>未找到评测数据</h1></section>";
     return;
   }
+
+  injectJsonLd(item);
+
+  const verifiedBadge = item.needs_verification
+    ? '<span style="color:#b45309;font-size:13px;">⚠ 待校验</span>'
+    : '<span style="color:#16a34a;font-size:13px;">✓ 已核实</span>';
+
   detailRoot.innerHTML = `
     <section class="card">
       <h1>${item.title_zh}</h1>
-      <p class="meta">Model: ${item.slug} | needs_verification: ${item.needs_verification}</p>
+      <p class="meta">${item.age_range} | ${item.weight_range} &nbsp;${verifiedBadge}</p>
       <p>${item.summary_zh}</p>
-      <p>${item.summary_en}</p>
+      <p style="color:#5a667b;">${item.summary_en}</p>
     </section>
     <section class="card">
       <h2>基础参数</h2>
@@ -93,10 +137,12 @@ function renderDetail(items) {
     </section>
     <section class="card">
       <h2>来源信息</h2>
-      <p>source_url: ${item.source_url}</p>
-      <p>source_note: ${item.source_note || ""}</p>
-      <p>verified_at: ${item.verified_at}</p>
+      <p><a href="${item.source_url}" target="_blank" rel="noopener noreferrer">查看原始来源</a></p>
+      ${item.source_note ? `<p>${item.source_note}</p>` : ""}
+      ${item.verified_at ? `<p>核实时间: ${item.verified_at}</p>` : ""}
     </section>
+    <p style="margin-top:12px;"><a href="index.html">← 返回列表</a> &nbsp;
+    <a href="compare.html?a=${encodeURIComponent(item.slug)}&b=sample-compact-stroller-2026">与其他车型对比</a></p>
   `;
 }
 

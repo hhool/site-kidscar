@@ -15,6 +15,11 @@
   <meta name="twitter:description" content="童车多维度横向对比：安全、操控、重量、折叠、价格，选出最适合你的一款。" />
   <link rel="canonical" href="https://www.site-kidscar.com/compare" />
   <style>
+    nav.site-nav { background:#0d8bff; color:#fff; padding:10px 20px; display:flex; align-items:center; gap:18px; }
+    nav.site-nav a { color:#fff; text-decoration:none; font-size:15px; }
+    nav.site-nav a:hover { text-decoration:underline; }
+    nav.site-nav .brand { font-weight:700; font-size:17px; margin-right:auto; }
+    footer.site-footer { text-align:center; padding:18px; font-size:12px; color:#7a869d; border-top:1px solid #dde4f2; margin-top:32px; }
     body { margin: 0; font-family: "Segoe UI", "PingFang SC", sans-serif; background: #f7f9fd; color: #1f2733; }
     .wrap { max-width: 980px; margin: 0 auto; padding: 18px; }
     table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #dbe2f1; }
@@ -24,8 +29,13 @@
   </style>
 </head>
 <body>
+  <nav class="site-nav">
+    <a class="brand" href="index.html">🍼 Site Kidscar</a>
+    <a href="index.html">评测列表</a>
+    <a href="compare.html">车型对比</a>
+  </nav>
   <main class="wrap">
-    <h1>童车对比示例</h1>
+    <h1>童车对比</h1>
     <table>
       <thead>
         <tr>
@@ -38,6 +48,7 @@
     </table>
     <p id="app-error"></p>
   </main>
+  <footer class="site-footer">© 2026 Site Kidscar · 数据仅供参考，购买前请自行核实。</footer>
   <script src="assets/app.js"></script>
 </body>
 </html>
