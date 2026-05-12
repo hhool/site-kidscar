@@ -38,12 +38,20 @@ jobs:
             echo "Name: VERCEL_TOKEN"
             exit 1
           fi
-          if ! printf '%s' "$VERCEL_TOKEN" | grep -Eq '^vcp_[A-Za-z0-9_]+$'; then
+
+          CLEAN_TOKEN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '[:space:]')"
+          CLEAN_TOKEN="${CLEAN_TOKEN#Bearer}"
+          CLEAN_TOKEN="${CLEAN_TOKEN#bearer}"
+          CLEAN_TOKEN="${CLEAN_TOKEN# }"
+
+          if ! printf '%s' "$CLEAN_TOKEN" | grep -Eq '^vcp_[A-Za-z0-9_]+$'; then
             echo "VERCEL_TOKEN format is invalid."
             echo "Expected format: vcp_ + letters/numbers/underscore only"
             echo "Do not include quotes, bearer prefix, URLs, or expressions like \${{ secrets.VERCEL_TOKEN }}"
             exit 1
           fi
+
+          echo "VERCEL_TOKEN_CLEAN=$CLEAN_TOKEN" >> "$GITHUB_ENV"
           echo "VERCEL_TOKEN format OK"
 
       - name: Validate healthcheck URL format (optional)
@@ -118,23 +126,31 @@ jobs:
             echo "Name: VERCEL_TOKEN"
             exit 1
           fi
-          if ! printf '%s' "$VERCEL_TOKEN" | grep -Eq '^vcp_[A-Za-z0-9_]+$'; then
+
+          CLEAN_TOKEN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '[:space:]')"
+          CLEAN_TOKEN="${CLEAN_TOKEN#Bearer}"
+          CLEAN_TOKEN="${CLEAN_TOKEN#bearer}"
+          CLEAN_TOKEN="${CLEAN_TOKEN# }"
+
+          if ! printf '%s' "$CLEAN_TOKEN" | grep -Eq '^vcp_[A-Za-z0-9_]+$'; then
             echo "VERCEL_TOKEN format is invalid."
             echo "Expected format: vcp_ + letters/numbers/underscore only"
             echo "Do not include quotes, bearer prefix, URLs, or expressions like \${{ secrets.VERCEL_TOKEN }}"
             exit 1
           fi
 
+          echo "VERCEL_TOKEN_CLEAN=$CLEAN_TOKEN" >> "$GITHUB_ENV"
+
       - name: Pull Vercel environment
-        run: vercel pull --yes --environment=${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token=$VERCEL_TOKEN
+        run: vercel pull --yes --environment=${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token=$VERCEL_TOKEN_CLEAN
 
       - name: Build with Vercel
-        run: vercel build ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=$VERCEL_TOKEN
+        run: vercel build ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=$VERCEL_TOKEN_CLEAN
 
       - name: Deploy to Vercel
         id: deploy
         run: |
-          URL=$(vercel deploy --prebuilt ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=$VERCEL_TOKEN)
+          URL=$(vercel deploy --prebuilt ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=$VERCEL_TOKEN_CLEAN)
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed: $URL"
 

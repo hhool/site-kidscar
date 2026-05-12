@@ -90,6 +90,28 @@ function renderIndex(items) {
     limit: 6,
   };
 
+  function hydrateStateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    state.q = (params.get("q") || "").toLowerCase().trim();
+    state.age = params.get("age") || "";
+    state.category = params.get("category") || "";
+    state.sort = params.get("sort") || "latest";
+    const page = Number.parseInt(params.get("page") || "1", 10);
+    state.page = Number.isFinite(page) && page > 0 ? page : 1;
+  }
+
+  function syncStateToUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (state.q) params.set("q", state.q); else params.delete("q");
+    if (state.age) params.set("age", state.age); else params.delete("age");
+    if (state.category) params.set("category", state.category); else params.delete("category");
+    if (state.sort && state.sort !== "latest") params.set("sort", state.sort); else params.delete("sort");
+    if (state.page > 1) params.set("page", String(state.page)); else params.delete("page");
+    const query = params.toString();
+    const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}`;
+    window.history.replaceState(null, "", nextUrl);
+  }
+
   function updateSourceLabel(source) {
     if (!dataSource) return;
     if (source === "api-db") {
@@ -154,10 +176,10 @@ function renderIndex(items) {
 
   async function applyFilters() {
     const reqId = ++requestSeq;
-    state.q = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
-    state.age = document.getElementById("filter-age")?.value || "";
-    state.category = document.getElementById("filter-category")?.value || "";
-    state.sort = document.getElementById("sort-by")?.value || "latest";
+    state.q = (document.getElementById("search-input")?.value || state.q).toLowerCase().trim();
+    state.age = document.getElementById("filter-age")?.value || state.age;
+    state.category = document.getElementById("filter-category")?.value || state.category;
+    state.sort = document.getElementById("sort-by")?.value || state.sort;
 
     let payload = {
       items,
@@ -174,9 +196,11 @@ function renderIndex(items) {
 
     if (reqId !== requestSeq) return;
 
+    state.page = payload.page;
     buildCards(payload.items);
     updatePager(payload.total, payload.page, payload.limit);
     updateSourceLabel(payload.source);
+    syncStateToUrl();
   }
 
   async function resetAndApply() {
@@ -189,13 +213,19 @@ function renderIndex(items) {
     await applyFilters();
   }
 
-  buildCards(items.slice(0, state.limit));
-  updatePager(items.length, 1, state.limit);
-
   const searchInput = document.getElementById("search-input");
   const filterAge = document.getElementById("filter-age");
   const filterCat = document.getElementById("filter-category");
   const sortBy = document.getElementById("sort-by");
+
+  hydrateStateFromUrl();
+  if (searchInput) searchInput.value = state.q;
+  if (filterAge) filterAge.value = state.age;
+  if (filterCat) filterCat.value = state.category;
+  if (sortBy) sortBy.value = state.sort;
+
+  applyFilters();
+
   if (searchInput) searchInput.addEventListener("input", resetAndApply);
   if (filterAge) filterAge.addEventListener("change", resetAndApply);
   if (filterCat) filterCat.addEventListener("change", resetAndApply);
