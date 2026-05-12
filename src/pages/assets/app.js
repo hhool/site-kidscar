@@ -1,7 +1,16 @@
-async function loadReviews() {
+async function loadReviews(filters = {}) {
+  const params = new URLSearchParams();
+  if (filters.q) params.set("q", filters.q);
+  if (filters.category) params.set("category", filters.category);
+  if (filters.age) params.set("age", filters.age);
+  if (filters.page) params.set("page", String(filters.page));
+  if (filters.limit) params.set("limit", String(filters.limit));
+
   // Prefer dynamic API when available (Vercel/Neon), fallback to static JSON.
   try {
-    const apiResponse = await fetch("/api/reviews");
+    const query = params.toString();
+    const url = query ? `/api/reviews?${query}` : "/api/reviews";
+    const apiResponse = await fetch(url);
     if (apiResponse.ok) {
       return apiResponse.json();
     }
@@ -28,6 +37,7 @@ function bySlug(items, slug) {
 function renderIndex(items) {
   const list = document.getElementById("review-list");
   if (!list) return;
+  let requestSeq = 0;
 
   function buildCards(filtered) {
     const noResults = document.getElementById("no-results");
@@ -71,11 +81,28 @@ function renderIndex(items) {
       .join("");
   }
 
-  function applyFilters() {
+  async function applyFilters() {
+    const reqId = ++requestSeq;
     const query = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
     const ageFilter = document.getElementById("filter-age")?.value || "";
     const catFilter = document.getElementById("filter-category")?.value || "";
-    const filtered = items.filter((item) => {
+
+    let source = items;
+    try {
+      source = await loadReviews({
+        q: query,
+        category: catFilter,
+        age: ageFilter,
+        page: 1,
+        limit: 50,
+      });
+    } catch (_err) {
+      // Keep the in-memory static items when API and static fetch both fail here.
+    }
+
+    if (reqId !== requestSeq) return;
+
+    const filtered = source.filter((item) => {
       const matchText = !query ||
         item.title_zh.toLowerCase().includes(query) ||
         item.summary_zh.toLowerCase().includes(query) ||

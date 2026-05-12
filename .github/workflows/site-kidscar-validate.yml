@@ -40,6 +40,9 @@ jobs:
       - name: Run smoke checks
         run: ./e2e/smoke-http-check.sh
 
+      - name: Run API smoke checks
+        run: ./e2e/smoke-api-check.sh
+
       - name: Verify Cloudflare Pages config
         run: |
           test -f src/pages/_redirects && echo "_redirects OK" || (echo "_redirects missing" && exit 1)
