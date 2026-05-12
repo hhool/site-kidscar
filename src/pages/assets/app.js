@@ -135,6 +135,16 @@ function renderDetail(items) {
         <li>体重区间: ${item.weight_range}</li>
       </ul>
     </section>
+    ${item.scores ? `
+    <section class="card">
+      <h2>评分</h2>
+      <ul>
+        <li>安全: ${item.scores.safety}/10</li>
+        <li>操控: ${item.scores.handling}/10</li>
+        <li>便携: ${item.scores.portability}/10</li>
+        <li>性价比: ${item.scores.value}/10</li>
+      </ul>
+    </section>` : ""}
     <section class="card">
       <h2>来源信息</h2>
       <p><a href="${item.source_url}" target="_blank" rel="noopener noreferrer">查看原始来源</a></p>
@@ -150,31 +160,69 @@ function renderCompare(items) {
   const tableBody = document.getElementById("compare-body");
   const headA = document.getElementById("head-a");
   const headB = document.getElementById("head-b");
+  const pickerA = document.getElementById("picker-a");
+  const pickerB = document.getElementById("picker-b");
   if (!tableBody || !headA || !headB) return;
 
-  const aSlug = queryParam("a") || "sample-compact-stroller-2026";
-  const bSlug = queryParam("b") || "urban-lite-360-2026";
-  const a = bySlug(items, aSlug);
-  const b = bySlug(items, bSlug);
+  // Populate pickers if present
+  if (pickerA && pickerB) {
+    const options = items.map((it) =>
+      `<option value="${it.slug}">${it.title_zh}</option>`
+    ).join("");
+    pickerA.innerHTML = options;
+    pickerB.innerHTML = options;
 
-  if (!a || !b) {
-    tableBody.innerHTML = "<tr><td colspan=\"3\">未找到可对比数据</td></tr>";
-    return;
+    // Set initial selection from URL params
+    const initA = queryParam("a") || (items[0] && items[0].slug) || "";
+    const initB = queryParam("b") || (items[1] && items[1].slug) || (items[0] && items[0].slug) || "";
+    pickerA.value = initA;
+    pickerB.value = initB;
   }
 
-  headA.textContent = a.title_zh;
-  headB.textContent = b.title_zh;
+  function buildTable() {
+    const aSlug = pickerA ? pickerA.value : (queryParam("a") || "sample-compact-stroller-2026");
+    const bSlug = pickerB ? pickerB.value : (queryParam("b") || "urban-lite-360-2026");
+    const a = bySlug(items, aSlug);
+    const b = bySlug(items, bSlug);
 
-  const rows = [
-    ["适用年龄", a.age_range, b.age_range],
-    ["体重区间", a.weight_range, b.weight_range],
-    ["是否待校验", String(a.needs_verification), String(b.needs_verification)],
-    ["来源链接", `<a href=\"${a.source_url}\" target=\"_blank\">A 来源</a>`, `<a href=\"${b.source_url}\" target=\"_blank\">B 来源</a>`]
-  ];
+    if (!a || !b) {
+      tableBody.innerHTML = "<tr><td colspan=\"3\">未找到可对比数据</td></tr>";
+      return;
+    }
 
-  tableBody.innerHTML = rows
-    .map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`)
-    .join("");
+    if (headA) headA.textContent = a.title_zh;
+    if (headB) headB.textContent = b.title_zh;
+
+    // Update URL without reload
+    const url = new URL(window.location.href);
+    url.searchParams.set("a", aSlug);
+    url.searchParams.set("b", bSlug);
+    window.history.replaceState(null, "", url.toString());
+
+    const rows = [
+      ["适用年龄",   a.age_range,           b.age_range],
+      ["体重区间",   a.weight_range,         b.weight_range],
+      ["安全评分",   a.scores ? `${a.scores.safety}/10` : "—", b.scores ? `${b.scores.safety}/10` : "—"],
+      ["操控评分",   a.scores ? `${a.scores.handling}/10` : "—", b.scores ? `${b.scores.handling}/10` : "—"],
+      ["便携评分",   a.scores ? `${a.scores.portability}/10` : "—", b.scores ? `${b.scores.portability}/10` : "—"],
+      ["性价比评分", a.scores ? `${a.scores.value}/10` : "—", b.scores ? `${b.scores.value}/10` : "—"],
+      ["核实状态",   a.needs_verification ? "⚠ 待校验" : "✓ 已核实",
+                    b.needs_verification ? "⚠ 待校验" : "✓ 已核实"],
+      ["核实时间",   a.verified_at || "—",  b.verified_at || "—"],
+      ["来源",       `<a href="${a.source_url}" target="_blank" rel="noopener">查看</a>`,
+                    `<a href="${b.source_url}" target="_blank" rel="noopener">查看</a>`]
+    ];
+
+    tableBody.innerHTML = rows.map(([dim, va, vb]) => {
+      const diff = va !== vb;
+      const cls = diff ? " class=\"highlight\"" : "";
+      return `<tr><td>${dim}</td><td${cls}>${va}</td><td${cls}>${vb}</td></tr>`;
+    }).join("");
+  }
+
+  buildTable();
+  if (pickerA) pickerA.addEventListener("change", buildTable);
+  if (pickerB) pickerB.addEventListener("change", buildTable);
 }
 
 async function boot() {

@@ -9,5 +9,11 @@
   "source_url": "https://example.com/trail-pro-x-spec",
   "source_note": "Official product brochure and distributor FAQ",
   "needs_verification": false,
-  "verified_at": "2026-05-12"
+  "verified_at": "2026-05-12",
+  "scores": {
+    "safety": 9,
+    "handling": 8,
+    "portability": 6,
+    "value": 7
+  }
 }

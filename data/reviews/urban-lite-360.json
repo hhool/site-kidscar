@@ -9,5 +9,11 @@
   "source_url": "https://example.com/urban-lite-360-spec",
   "source_note": "Brand specification page and user manual",
   "needs_verification": true,
-  "verified_at": "2026-05-12"
+  "verified_at": "2026-05-12",
+  "scores": {
+    "safety": 8,
+    "handling": 8,
+    "portability": 9,
+    "value": 8
+  }
 }

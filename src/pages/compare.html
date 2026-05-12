@@ -26,6 +26,10 @@
     th, td { border: 1px solid #dbe2f1; padding: 10px; text-align: left; }
     th { background: #edf3ff; }
     #app-error { margin-top: 12px; color: #b42318; }
+    .compare-picker { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px; align-items:center; }
+    .compare-picker label { font-size:14px; color:#5a667b; }
+    .compare-picker select { border:1px solid #c5d0e8; border-radius:10px; padding:7px 12px; font-size:14px; background:#fff; color:#1f2733; }
+    td.highlight { background:#f0f9ff; font-weight:600; }
   </style>
 </head>
 <body>
@@ -36,6 +40,10 @@
   </nav>
   <main class="wrap">
     <h1>童车对比</h1>
+    <div class="compare-picker">
+      <label>车型 A：<select id="picker-a"></select></label>
+      <label>车型 B：<select id="picker-b"></select></label>
+    </div>
     <table>
       <thead>
         <tr>

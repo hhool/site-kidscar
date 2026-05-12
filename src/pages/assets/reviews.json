@@ -10,7 +10,13 @@
     "source_url": "https://example.com/sample-compact-stroller-spec",
     "source_note": "Manufacturer spec page snapshot and manual PDF",
     "needs_verification": true,
-    "verified_at": "2026-05-12"
+    "verified_at": "2026-05-12",
+    "scores": {
+      "safety": 7,
+      "handling": 7,
+      "portability": 9,
+      "value": 8
+    }
   },
   {
     "slug": "trail-pro-x-2026",
@@ -23,7 +29,13 @@
     "source_url": "https://example.com/trail-pro-x-spec",
     "source_note": "Official product brochure and distributor FAQ",
     "needs_verification": false,
-    "verified_at": "2026-05-12"
+    "verified_at": "2026-05-12",
+    "scores": {
+      "safety": 9,
+      "handling": 8,
+      "portability": 6,
+      "value": 7
+    }
   },
   {
     "slug": "urban-lite-360-2026",
@@ -36,6 +48,12 @@
     "source_url": "https://example.com/urban-lite-360-spec",
     "source_note": "Brand specification page and user manual",
     "needs_verification": true,
-    "verified_at": "2026-05-12"
+    "verified_at": "2026-05-12",
+    "scores": {
+      "safety": 8,
+      "handling": 8,
+      "portability": 9,
+      "value": 8
+    }
   }
 ]

@@ -9,5 +9,11 @@
   "source_url": "https://example.com/sample-compact-stroller-spec",
   "source_note": "Manufacturer spec page snapshot and manual PDF",
   "needs_verification": true,
-  "verified_at": "2026-05-12"
+  "verified_at": "2026-05-12",
+  "scores": {
+    "safety": 7,
+    "handling": 7,
+    "portability": 9,
+    "value": 8
+  }
 }
