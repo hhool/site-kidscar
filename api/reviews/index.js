@@ -49,6 +49,26 @@ function parsePositiveInt(value, fallback, max) {
   return Math.min(n, max);
 }
 
+function parseSort(value) {
+  const allowed = new Set(["latest", "safety_desc", "value_desc"]);
+  const v = String(value || "latest");
+  return allowed.has(v) ? v : "latest";
+}
+
+function applySort(items, sort) {
+  const list = [...items];
+  if (sort === "safety_desc") {
+    list.sort((a, b) => (b.scores?.safety || 0) - (a.scores?.safety || 0));
+    return list;
+  }
+  if (sort === "value_desc") {
+    list.sort((a, b) => (b.scores?.value || 0) - (a.scores?.value || 0));
+    return list;
+  }
+  list.sort((a, b) => String(b.verified_at || "").localeCompare(String(a.verified_at || "")));
+  return list;
+}
+
 export default async function handler(req, res) {
   // CORS – allow same-origin and CDN preview domains
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -59,6 +79,7 @@ export default async function handler(req, res) {
   const category = asSingleValue(req.query.category) || "";
   const age = asSingleValue(req.query.age) || "";
   const q = asSingleValue(req.query.q) || "";
+  const sort = parseSort(asSingleValue(req.query.sort));
   const page = parsePositiveInt(asSingleValue(req.query.page), 1, 100000);
   const limit = parsePositiveInt(asSingleValue(req.query.limit), 20, 100);
   const offset = (page - 1) * limit;
@@ -83,7 +104,6 @@ export default async function handler(req, res) {
           AND age_range = ${age}
           AND (title_zh ILIKE ${lq} OR title_en ILIKE ${lq} OR summary_zh ILIKE ${lq})
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     } else if (category && age) {
       const totalRows = await sql`
@@ -95,7 +115,6 @@ export default async function handler(req, res) {
         SELECT * FROM reviews
         WHERE category = ${category} AND age_range = ${age}
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     } else if (age && q) {
       const lq = `%${q}%`;
@@ -110,7 +129,6 @@ export default async function handler(req, res) {
         WHERE age_range = ${age}
           AND (title_zh ILIKE ${lq} OR title_en ILIKE ${lq} OR summary_zh ILIKE ${lq})
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     } else if (category && q) {
       const lq = `%${q}%`;
@@ -125,7 +143,6 @@ export default async function handler(req, res) {
         WHERE category = ${category}
           AND (title_zh ILIKE ${lq} OR title_en ILIKE ${lq} OR summary_zh ILIKE ${lq})
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     } else if (age) {
       const totalRows = await sql`
@@ -137,7 +154,6 @@ export default async function handler(req, res) {
         SELECT * FROM reviews
         WHERE age_range = ${age}
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     } else if (category) {
       const totalRows = await sql`
@@ -149,7 +165,6 @@ export default async function handler(req, res) {
         SELECT * FROM reviews
         WHERE category = ${category}
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     } else if (q) {
       const lq = `%${q}%`;
@@ -162,7 +177,6 @@ export default async function handler(req, res) {
         SELECT * FROM reviews
         WHERE title_zh ILIKE ${lq} OR title_en ILIKE ${lq} OR summary_zh ILIKE ${lq}
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     } else {
       const totalRows = await sql`SELECT COUNT(*)::int AS count FROM reviews`;
@@ -170,24 +184,26 @@ export default async function handler(req, res) {
       rows = await sql`
         SELECT * FROM reviews
         ORDER BY created_at DESC
-        LIMIT ${limit} OFFSET ${offset}
       `;
     }
 
     // Normalise DB rows to match static JSON shape (scores object)
-    const data = rows.map(normaliseRow);
+    const data = applySort(rows.map(normaliseRow), sort);
+    const paged = data.slice(offset, offset + limit);
     res.setHeader("X-Total-Count", String(total));
     res.setHeader("X-Page", String(page));
     res.setHeader("X-Limit", String(limit));
-    return res.status(200).json(data);
+    res.setHeader("X-Data-Source", "api-db");
+    return res.status(200).json(paged);
   } catch (_dbErr) {
     // DB unavailable – serve static file
-    const items = applyQueryFilters(staticFallback(), { category, age, q });
+    const items = applySort(applyQueryFilters(staticFallback(), { category, age, q }), sort);
     const total = items.length;
     const paged = items.slice(offset, offset + limit);
     res.setHeader("X-Total-Count", String(total));
     res.setHeader("X-Page", String(page));
     res.setHeader("X-Limit", String(limit));
+    res.setHeader("X-Data-Source", "api-static");
     return res.status(200).json(paged);
   }
 }

@@ -3,6 +3,7 @@ async function loadReviews(filters = {}) {
   if (filters.q) params.set("q", filters.q);
   if (filters.category) params.set("category", filters.category);
   if (filters.age) params.set("age", filters.age);
+  if (filters.sort) params.set("sort", filters.sort);
   const page = Number(filters.page || 1);
   const limit = Number(filters.limit || 20);
   params.set("page", String(page));
@@ -18,7 +19,8 @@ async function loadReviews(filters = {}) {
       const total = Number(apiResponse.headers.get("X-Total-Count") || items.length);
       const currentPage = Number(apiResponse.headers.get("X-Page") || page);
       const currentLimit = Number(apiResponse.headers.get("X-Limit") || limit);
-      return { items, total, page: currentPage, limit: currentLimit };
+      const source = apiResponse.headers.get("X-Data-Source") || "api";
+      return { items, total, page: currentPage, limit: currentLimit, source };
     }
   } catch (_err) {
     // Ignore and continue with static fallback.
@@ -44,6 +46,7 @@ async function loadReviews(filters = {}) {
     total: filtered.length,
     page,
     limit,
+    source: "static-local",
   };
 }
 
@@ -76,14 +79,29 @@ function renderIndex(items) {
   const pagerInfo = document.getElementById("pager-info");
   const pagerPrev = document.getElementById("pager-prev");
   const pagerNext = document.getElementById("pager-next");
+  const dataSource = document.getElementById("data-source");
   let requestSeq = 0;
   const state = {
     q: "",
     age: "",
     category: "",
+    sort: "latest",
     page: 1,
     limit: 6,
   };
+
+  function updateSourceLabel(source) {
+    if (!dataSource) return;
+    if (source === "api-db") {
+      dataSource.textContent = "数据来源：API（Neon DB）";
+      return;
+    }
+    if (source === "api-static") {
+      dataSource.textContent = "数据来源：API（静态回退）";
+      return;
+    }
+    dataSource.textContent = "数据来源：本地静态文件";
+  }
 
   function updatePager(total, page, limit) {
     const pages = Math.max(1, Math.ceil(total / limit));
@@ -139,12 +157,14 @@ function renderIndex(items) {
     state.q = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
     state.age = document.getElementById("filter-age")?.value || "";
     state.category = document.getElementById("filter-category")?.value || "";
+    state.sort = document.getElementById("sort-by")?.value || "latest";
 
     let payload = {
       items,
       total: items.length,
       page: state.page,
       limit: state.limit,
+      source: "static-local",
     };
     try {
       payload = await loadReviews(state);
@@ -156,6 +176,7 @@ function renderIndex(items) {
 
     buildCards(payload.items);
     updatePager(payload.total, payload.page, payload.limit);
+    updateSourceLabel(payload.source);
   }
 
   async function resetAndApply() {
@@ -174,9 +195,11 @@ function renderIndex(items) {
   const searchInput = document.getElementById("search-input");
   const filterAge = document.getElementById("filter-age");
   const filterCat = document.getElementById("filter-category");
+  const sortBy = document.getElementById("sort-by");
   if (searchInput) searchInput.addEventListener("input", resetAndApply);
   if (filterAge) filterAge.addEventListener("change", resetAndApply);
   if (filterCat) filterCat.addEventListener("change", resetAndApply);
+  if (sortBy) sortBy.addEventListener("change", resetAndApply);
   if (pagerPrev) pagerPrev.addEventListener("click", () => goPage(-1));
   if (pagerNext) pagerNext.addEventListener("click", () => goPage(1));
 }
