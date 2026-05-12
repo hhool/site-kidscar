@@ -2,6 +2,7 @@
   "name": "site-kidscar",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Global stroller review site — Phase 1",
   "scripts": {
     "build": "bash scripts/build-reviews-json.sh",
@@ -10,9 +11,13 @@
     "validate": "bash scripts/validate-review-json.sh",
     "serve": "bash scripts/serve-pages.sh",
     "smoke": "bash e2e/smoke-http-check.sh",
-    "preflight": "npm run build && npm run sitemap && npm run audit && npm run validate"
+    "preflight": "npm run build && npm run sitemap && npm run audit && npm run validate",
+    "db:migrate": "psql $DATABASE_URL -f db/schema.sql"
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
   }
 }
