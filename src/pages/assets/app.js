@@ -222,6 +222,21 @@ function renderIndex(items) {
     await applyFilters();
   }
 
+  async function clearAllFilters() {
+    state.q = "";
+    state.age = "";
+    state.category = "";
+    state.sort = "latest";
+    state.sortDir = "desc";
+    state.page = 1;
+    if (searchInput) searchInput.value = "";
+    if (filterAge) filterAge.value = "";
+    if (filterCat) filterCat.value = "";
+    if (sortBy) sortBy.value = "latest";
+    if (sortDir) sortDir.value = "desc";
+    await applyFilters();
+  }
+
   async function goPage(delta) {
     state.page = Math.max(1, state.page + delta);
     await applyFilters();
@@ -232,6 +247,7 @@ function renderIndex(items) {
   const filterCat = document.getElementById("filter-category");
   const sortBy = document.getElementById("sort-by");
   const sortDir = document.getElementById("sort-dir");
+  const resetBtn = document.getElementById("reset-filters");
 
   hydrateStateFromUrl();
   if (searchInput) searchInput.value = state.q;
@@ -247,6 +263,7 @@ function renderIndex(items) {
   if (filterCat) filterCat.addEventListener("change", resetAndApply);
   if (sortBy) sortBy.addEventListener("change", resetAndApply);
   if (sortDir) sortDir.addEventListener("change", resetAndApply);
+  if (resetBtn) resetBtn.addEventListener("click", clearAllFilters);
   if (pagerPrev) pagerPrev.addEventListener("click", () => goPage(-1));
   if (pagerNext) pagerNext.addEventListener("click", () => goPage(1));
 }
@@ -356,13 +373,26 @@ function renderCompare(items) {
   const headB = document.getElementById("head-b");
   const pickerA = document.getElementById("picker-a");
   const pickerB = document.getElementById("picker-b");
+  const verifiedOnly = document.getElementById("verified-only");
   if (!tableBody || !headA || !headB) return;
 
-  // Populate pickers if present
-  if (pickerA && pickerB) {
-    const compareCandidates = [...items].sort(
+  function getCompareCandidates() {
+    const source = verifiedOnly && verifiedOnly.checked
+      ? items.filter((it) => !it.needs_verification)
+      : items;
+    return [...source].sort(
       (a, b) => (b.scores?.safety || 0) - (a.scores?.safety || 0)
     );
+  }
+
+  function populatePickers() {
+    if (!pickerA || !pickerB) return;
+    const compareCandidates = getCompareCandidates();
+    if (compareCandidates.length === 0) {
+      pickerA.innerHTML = "";
+      pickerB.innerHTML = "";
+      return;
+    }
     const options = compareCandidates.map((it) =>
       `<option value="${it.slug}">${it.title_zh}</option>`
     ).join("");
@@ -370,17 +400,34 @@ function renderCompare(items) {
     pickerB.innerHTML = options;
 
     // Set initial selection from URL params
-    const initA = queryParam("a") || (items[0] && items[0].slug) || "";
-    const initB = queryParam("b") || (items[1] && items[1].slug) || (items[0] && items[0].slug) || "";
+    const initA = queryParam("a") || (compareCandidates[0] && compareCandidates[0].slug) || "";
+    const initB = queryParam("b") || (compareCandidates[1] && compareCandidates[1].slug) || (compareCandidates[0] && compareCandidates[0].slug) || "";
     pickerA.value = initA;
     pickerB.value = initB;
   }
 
+  if (verifiedOnly) {
+    verifiedOnly.checked = queryParam("verified") === "1";
+  }
+
+  populatePickers();
+
   function buildTable() {
+    const compareCandidates = getCompareCandidates();
+    if (compareCandidates.length === 0) {
+      tableBody.innerHTML = "<tr><td colspan=\"3\">没有满足条件的可对比车型</td></tr>";
+      if (headA) headA.textContent = "A";
+      if (headB) headB.textContent = "B";
+      return;
+    }
+
     const aSlug = pickerA ? pickerA.value : (queryParam("a") || "sample-compact-stroller-2026");
     const bSlug = pickerB ? pickerB.value : (queryParam("b") || "urban-lite-360-2026");
-    const a = bySlug(items, aSlug);
-    const b = bySlug(items, bSlug);
+    const a = compareCandidates.find((it) => it.slug === aSlug) || compareCandidates[0];
+    const b = compareCandidates.find((it) => it.slug === bSlug) || compareCandidates[1] || compareCandidates[0];
+
+    if (pickerA) pickerA.value = a.slug;
+    if (pickerB) pickerB.value = b.slug;
 
     if (!a || !b) {
       tableBody.innerHTML = "<tr><td colspan=\"3\">未找到可对比数据</td></tr>";
@@ -392,8 +439,13 @@ function renderCompare(items) {
 
     // Update URL without reload
     const url = new URL(window.location.href);
-    url.searchParams.set("a", aSlug);
-    url.searchParams.set("b", bSlug);
+    url.searchParams.set("a", a.slug);
+    url.searchParams.set("b", b.slug);
+    if (verifiedOnly && verifiedOnly.checked) {
+      url.searchParams.set("verified", "1");
+    } else {
+      url.searchParams.delete("verified");
+    }
     window.history.replaceState(null, "", url.toString());
 
     const rows = [
@@ -420,6 +472,12 @@ function renderCompare(items) {
   buildTable();
   if (pickerA) pickerA.addEventListener("change", buildTable);
   if (pickerB) pickerB.addEventListener("change", buildTable);
+  if (verifiedOnly) {
+    verifiedOnly.addEventListener("change", () => {
+      populatePickers();
+      buildTable();
+    });
+  }
 }
 
 async function boot() {

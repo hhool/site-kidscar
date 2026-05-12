@@ -29,6 +29,7 @@
     .compare-picker { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px; align-items:center; }
     .compare-picker label { font-size:14px; color:#5a667b; }
     .compare-picker select { border:1px solid #c5d0e8; border-radius:10px; padding:7px 12px; font-size:14px; background:#fff; color:#1f2733; }
+    .compare-picker .toggle { display:flex; align-items:center; gap:6px; color:#5a667b; font-size:14px; }
     td.highlight { background:#f0f9ff; font-weight:600; }
   </style>
 </head>
@@ -43,6 +44,7 @@
     <div class="compare-picker">
       <label>车型 A：<select id="picker-a"></select></label>
       <label>车型 B：<select id="picker-b"></select></label>
+      <label class="toggle"><input id="verified-only" type="checkbox" />仅显示已核实车型</label>
     </div>
     <table>
       <thead>
