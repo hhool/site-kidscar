@@ -2,18 +2,13 @@ name: site-kidscar-validate
 
 on:
   push:
-    paths:
-      - "site-kidscar/**"
+    branches: [main]
   pull_request:
-    paths:
-      - "site-kidscar/**"
+    branches: [main]
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: site-kidscar
 
     steps:
       - name: Checkout

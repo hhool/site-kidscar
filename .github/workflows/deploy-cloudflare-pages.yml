@@ -1,0 +1,47 @@
+name: deploy-cloudflare-pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cf-pages-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      - name: Build reviews JSON
+        run: bash scripts/build-reviews-json.sh
+
+      - name: Build sitemap
+        env:
+          SITE_BASE_URL: https://site-kidscar.pages.dev
+        run: bash scripts/build-sitemap.sh
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: site-kidscar
+          directory: src/pages
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: "3"
