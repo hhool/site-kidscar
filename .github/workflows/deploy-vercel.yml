@@ -6,14 +6,73 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      self_check_only:
+        description: "Run self-check only (skip deploy job)"
+        required: false
+        type: boolean
+        default: false
+      healthcheck_url:
+        description: "Optional absolute URL to test, e.g. https://site-kidscar.vercel.app/api/reviews?page=1&limit=1"
+        required: false
+        type: string
 
 concurrency:
   group: vercel-deploy-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  self-check:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      HEALTHCHECK_URL: ${{ inputs.healthcheck_url }}
+
+    steps:
+      - name: Validate Vercel token
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "VERCEL_TOKEN secret is missing."
+            echo "Set it at: Settings -> Secrets and variables -> Actions -> New repository secret"
+            echo "Name: VERCEL_TOKEN"
+            exit 1
+          fi
+          echo "VERCEL_TOKEN exists"
+
+      - name: Validate healthcheck URL format (optional)
+        if: ${{ inputs.healthcheck_url != '' }}
+        run: |
+          case "$HEALTHCHECK_URL" in
+            http://*|https://*)
+              echo "healthcheck_url format OK"
+              ;;
+            *)
+              echo "healthcheck_url must be absolute URL starting with http:// or https://"
+              exit 1
+              ;;
+          esac
+
+      - name: API health check (optional)
+        if: ${{ inputs.healthcheck_url != '' }}
+        run: |
+          echo "Health check: $HEALTHCHECK_URL"
+          ok=0
+          for i in $(seq 1 12); do
+            if curl -fsS "$HEALTHCHECK_URL" >/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo "Self-check API health check failed"
+            exit 1
+          fi
+          echo "Self-check API health check OK"
+
   deploy:
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    if: (github.event_name != 'workflow_dispatch' || inputs.self_check_only == false) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     permissions:
       contents: read
