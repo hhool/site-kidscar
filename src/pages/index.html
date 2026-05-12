@@ -83,6 +83,23 @@
     }
     .search-bar input { flex: 1; min-width: 180px; }
     #no-results { color: var(--muted); margin-top: 14px; display: none; }
+    .pager {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pager button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .pager button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .pager-info { color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
@@ -115,6 +132,11 @@
       </select>
     </div>
     <section id="review-list" class="grid"></section>
+    <div class="pager" aria-label="分页导航">
+      <button id="pager-prev" type="button">上一页</button>
+      <button id="pager-next" type="button">下一页</button>
+      <span id="pager-info" class="pager-info">第 1 / 1 页 · 共 0 条</span>
+    </div>
     <p id="no-results">没有符合条件的评测结果。</p>
     <p id="app-error"></p>
   </div>

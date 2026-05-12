@@ -55,6 +55,24 @@ jobs:
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed: $URL"
 
+      - name: API health check
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          echo "Health check: $URL/api/reviews?page=1&limit=1"
+          ok=0
+          for i in $(seq 1 12); do
+            if curl -fsS "$URL/api/reviews?page=1&limit=1" >/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo "API health check failed"
+            exit 1
+          fi
+          echo "API health check OK"
+
       - name: Comment preview URL on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7

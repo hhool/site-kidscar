@@ -3,8 +3,10 @@ async function loadReviews(filters = {}) {
   if (filters.q) params.set("q", filters.q);
   if (filters.category) params.set("category", filters.category);
   if (filters.age) params.set("age", filters.age);
-  if (filters.page) params.set("page", String(filters.page));
-  if (filters.limit) params.set("limit", String(filters.limit));
+  const page = Number(filters.page || 1);
+  const limit = Number(filters.limit || 20);
+  params.set("page", String(page));
+  params.set("limit", String(limit));
 
   // Prefer dynamic API when available (Vercel/Neon), fallback to static JSON.
   try {
@@ -12,7 +14,11 @@ async function loadReviews(filters = {}) {
     const url = query ? `/api/reviews?${query}` : "/api/reviews";
     const apiResponse = await fetch(url);
     if (apiResponse.ok) {
-      return apiResponse.json();
+      const items = await apiResponse.json();
+      const total = Number(apiResponse.headers.get("X-Total-Count") || items.length);
+      const currentPage = Number(apiResponse.headers.get("X-Page") || page);
+      const currentLimit = Number(apiResponse.headers.get("X-Limit") || limit);
+      return { items, total, page: currentPage, limit: currentLimit };
     }
   } catch (_err) {
     // Ignore and continue with static fallback.
@@ -22,7 +28,37 @@ async function loadReviews(filters = {}) {
   if (!staticResponse.ok) {
     throw new Error("Failed to load review data");
   }
-  return staticResponse.json();
+  const allItems = await staticResponse.json();
+  const filtered = allItems.filter((item) => {
+    const matchQ = !filters.q ||
+      item.title_zh.toLowerCase().includes(filters.q) ||
+      item.summary_zh.toLowerCase().includes(filters.q) ||
+      (item.title_en && item.title_en.toLowerCase().includes(filters.q));
+    const matchCategory = !filters.category || item.category === filters.category;
+    const matchAge = !filters.age || item.age_range === filters.age;
+    return matchQ && matchCategory && matchAge;
+  });
+  const offset = (page - 1) * limit;
+  return {
+    items: filtered.slice(offset, offset + limit),
+    total: filtered.length,
+    page,
+    limit,
+  };
+}
+
+async function loadReviewBySlug(slug) {
+  try {
+    const response = await fetch(`/api/reviews/${encodeURIComponent(slug)}`);
+    if (response.ok) {
+      return response.json();
+    }
+  } catch (_err) {
+    // Ignore and fallback to static data.
+  }
+
+  const fallback = await loadReviews({ page: 1, limit: 200 });
+  return bySlug(fallback.items, slug);
 }
 
 function queryParam(key) {
@@ -37,7 +73,24 @@ function bySlug(items, slug) {
 function renderIndex(items) {
   const list = document.getElementById("review-list");
   if (!list) return;
+  const pagerInfo = document.getElementById("pager-info");
+  const pagerPrev = document.getElementById("pager-prev");
+  const pagerNext = document.getElementById("pager-next");
   let requestSeq = 0;
+  const state = {
+    q: "",
+    age: "",
+    category: "",
+    page: 1,
+    limit: 6,
+  };
+
+  function updatePager(total, page, limit) {
+    const pages = Math.max(1, Math.ceil(total / limit));
+    if (pagerInfo) pagerInfo.textContent = `第 ${page} / ${pages} 页 · 共 ${total} 条`;
+    if (pagerPrev) pagerPrev.disabled = page <= 1;
+    if (pagerNext) pagerNext.disabled = page >= pages;
+  }
 
   function buildCards(filtered) {
     const noResults = document.getElementById("no-results");
@@ -83,45 +136,49 @@ function renderIndex(items) {
 
   async function applyFilters() {
     const reqId = ++requestSeq;
-    const query = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
-    const ageFilter = document.getElementById("filter-age")?.value || "";
-    const catFilter = document.getElementById("filter-category")?.value || "";
+    state.q = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
+    state.age = document.getElementById("filter-age")?.value || "";
+    state.category = document.getElementById("filter-category")?.value || "";
 
-    let source = items;
+    let payload = {
+      items,
+      total: items.length,
+      page: state.page,
+      limit: state.limit,
+    };
     try {
-      source = await loadReviews({
-        q: query,
-        category: catFilter,
-        age: ageFilter,
-        page: 1,
-        limit: 50,
-      });
+      payload = await loadReviews(state);
     } catch (_err) {
       // Keep the in-memory static items when API and static fetch both fail here.
     }
 
     if (reqId !== requestSeq) return;
 
-    const filtered = source.filter((item) => {
-      const matchText = !query ||
-        item.title_zh.toLowerCase().includes(query) ||
-        item.summary_zh.toLowerCase().includes(query) ||
-        (item.title_en && item.title_en.toLowerCase().includes(query));
-      const matchAge = !ageFilter || item.age_range === ageFilter;
-      const matchCat = !catFilter || item.category === catFilter;
-      return matchText && matchAge && matchCat;
-    });
-    buildCards(filtered);
+    buildCards(payload.items);
+    updatePager(payload.total, payload.page, payload.limit);
   }
 
-  buildCards(items);
+  async function resetAndApply() {
+    state.page = 1;
+    await applyFilters();
+  }
+
+  async function goPage(delta) {
+    state.page = Math.max(1, state.page + delta);
+    await applyFilters();
+  }
+
+  buildCards(items.slice(0, state.limit));
+  updatePager(items.length, 1, state.limit);
 
   const searchInput = document.getElementById("search-input");
   const filterAge = document.getElementById("filter-age");
   const filterCat = document.getElementById("filter-category");
-  if (searchInput) searchInput.addEventListener("input", applyFilters);
-  if (filterAge) filterAge.addEventListener("change", applyFilters);
-  if (filterCat) filterCat.addEventListener("change", applyFilters);
+  if (searchInput) searchInput.addEventListener("input", resetAndApply);
+  if (filterAge) filterAge.addEventListener("change", resetAndApply);
+  if (filterCat) filterCat.addEventListener("change", resetAndApply);
+  if (pagerPrev) pagerPrev.addEventListener("click", () => goPage(-1));
+  if (pagerNext) pagerNext.addEventListener("click", () => goPage(1));
 }
 
 function injectJsonLd(item) {
@@ -161,11 +218,20 @@ function injectJsonLd(item) {
   document.head.appendChild(canonical);
 }
 
-function renderDetail(items) {
+async function renderDetail(items) {
   const detailRoot = document.getElementById("detail-root");
   if (!detailRoot) return;
   const slug = queryParam("slug") || "sample-compact-stroller-2026";
-  const item = bySlug(items, slug);
+  let item = null;
+  try {
+    item = await loadReviewBySlug(slug);
+  } catch (_err) {
+    item = bySlug(items, slug);
+  }
+
+  if (!item) {
+    item = bySlug(items, slug);
+  }
   if (!item) {
     detailRoot.innerHTML = "<section class=\"card\"><h1>未找到评测数据</h1></section>";
     return;
@@ -285,10 +351,10 @@ function renderCompare(items) {
 
 async function boot() {
   try {
-    const reviews = await loadReviews();
-    renderIndex(reviews);
-    renderDetail(reviews);
-    renderCompare(reviews);
+    const data = await loadReviews({ page: 1, limit: 100 });
+    renderIndex(data.items);
+    await renderDetail(data.items);
+    renderCompare(data.items);
   } catch (err) {
     const errorNode = document.getElementById("app-error");
     if (errorNode) {
