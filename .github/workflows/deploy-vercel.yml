@@ -38,7 +38,13 @@ jobs:
             echo "Name: VERCEL_TOKEN"
             exit 1
           fi
-          echo "VERCEL_TOKEN exists"
+          if ! printf '%s' "$VERCEL_TOKEN" | grep -Eq '^vcp_[A-Za-z0-9_]+$'; then
+            echo "VERCEL_TOKEN format is invalid."
+            echo "Expected format: vcp_ + letters/numbers/underscore only"
+            echo "Do not include quotes, bearer prefix, URLs, or expressions like \${{ secrets.VERCEL_TOKEN }}"
+            exit 1
+          fi
+          echo "VERCEL_TOKEN format OK"
 
       - name: Validate healthcheck URL format (optional)
         if: ${{ inputs.healthcheck_url != '' }}
@@ -110,6 +116,12 @@ jobs:
             echo "VERCEL_TOKEN secret is missing."
             echo "Set it at: Settings -> Secrets and variables -> Actions -> New repository secret"
             echo "Name: VERCEL_TOKEN"
+            exit 1
+          fi
+          if ! printf '%s' "$VERCEL_TOKEN" | grep -Eq '^vcp_[A-Za-z0-9_]+$'; then
+            echo "VERCEL_TOKEN format is invalid."
+            echo "Expected format: vcp_ + letters/numbers/underscore only"
+            echo "Do not include quotes, bearer prefix, URLs, or expressions like \${{ secrets.VERCEL_TOKEN }}"
             exit 1
           fi
 
