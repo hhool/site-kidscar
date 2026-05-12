@@ -53,6 +53,18 @@
     "verified_at": {
       "type": "string",
       "format": "date"
+    },
+    "scores": {
+      "type": "object",
+      "description": "Editorial scores out of 10 across key dimensions",
+      "properties": {
+        "safety":      { "type": "integer", "minimum": 0, "maximum": 10 },
+        "handling":    { "type": "integer", "minimum": 0, "maximum": 10 },
+        "portability": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "value":       { "type": "integer", "minimum": 0, "maximum": 10 }
+      },
+      "required": ["safety", "handling", "portability", "value"],
+      "additionalProperties": false
     }
   },
   "additionalProperties": true

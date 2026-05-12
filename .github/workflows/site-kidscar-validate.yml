@@ -36,6 +36,9 @@ jobs:
       - name: Build frontend reviews data
         run: ./scripts/build-reviews-json.sh
 
+      - name: Build sitemap
+        run: ./scripts/build-sitemap.sh
+
       - name: Audit review quality
         run: ./scripts/audit-reviews.sh
 
@@ -53,4 +56,4 @@ jobs:
 
       - name: Verify package.json scripts
         run: |
-          node -e "const p=require('./package.json'); ['build','audit','validate','serve','smoke','preflight'].forEach(s=>{ if(!p.scripts[s]) throw new Error('missing script: '+s); }); console.log('package.json scripts OK');"
+          node -p "const p=require('./package.json'); ['build','sitemap','audit','validate','serve','smoke','preflight'].forEach(s=>{ if(!p.scripts[s]) throw new Error('missing script: '+s); }); 'package.json scripts OK'"
