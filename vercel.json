@@ -40,5 +40,6 @@
   "rewrites": [
     { "source": "/compare", "destination": "/src/pages/compare.html" },
     { "source": "/review/:id", "destination": "/src/pages/review-detail.html" }
-  ]
+  ],
+  "error404": "/src/pages/404.html"
 }
