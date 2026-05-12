@@ -154,23 +154,31 @@ jobs:
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed: $URL"
 
-      - name: API health check
+      - name: Post-deploy health checks
         run: |
           URL="${{ steps.deploy.outputs.url }}"
-          echo "Health check: $URL/api/reviews?page=1&limit=1"
-          ok=0
-          for i in $(seq 1 12); do
-            if curl -fsS "$URL/api/reviews?page=1&limit=1" >/dev/null; then
-              ok=1
-              break
+          check_url() {
+            local target="$1"
+            local label="$2"
+            local ok=0
+            echo "Health check [$label]: $target"
+            for i in $(seq 1 12); do
+              if curl -fsS "$target" >/dev/null; then
+                ok=1
+                break
+              fi
+              sleep 5
+            done
+            if [ "$ok" -ne 1 ]; then
+              echo "Health check failed [$label]"
+              exit 1
             fi
-            sleep 5
-          done
-          if [ "$ok" -ne 1 ]; then
-            echo "API health check failed"
-            exit 1
-          fi
-          echo "API health check OK"
+            echo "Health check OK [$label]"
+          }
+
+          check_url "$URL/index.html" "home"
+          check_url "$URL/review-detail.html?slug=city-cruiser-pro-2026" "detail"
+          check_url "$URL/api/reviews?page=1&limit=1" "api"
 
       - name: Comment preview URL on PR
         if: github.event_name == 'pull_request'
