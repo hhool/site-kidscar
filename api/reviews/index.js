@@ -81,6 +81,7 @@ export default async function handler(req, res) {
   // CORS – allow same-origin and CDN preview domains
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Cache-Control", "public, s-maxage=120, stale-while-revalidate=600");
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "GET") return res.status(405).json({ error: "Method Not Allowed" });
 

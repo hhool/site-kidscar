@@ -41,10 +41,19 @@ async function loadReviews(filters = {}) {
     const matchAge = !filters.age || item.age_range === filters.age;
     return matchQ && matchCategory && matchAge;
   });
+  const dir = filters.sortDir === "asc" ? 1 : -1;
+  const sorted = [...filtered];
+  if (filters.sort === "safety_desc") {
+    sorted.sort((a, b) => ((a.scores?.safety || 0) - (b.scores?.safety || 0)) * dir);
+  } else if (filters.sort === "value_desc") {
+    sorted.sort((a, b) => ((a.scores?.value || 0) - (b.scores?.value || 0)) * dir);
+  } else {
+    sorted.sort((a, b) => String(a.verified_at || "").localeCompare(String(b.verified_at || "")) * dir);
+  }
   const offset = (page - 1) * limit;
   return {
-    items: filtered.slice(offset, offset + limit),
-    total: filtered.length,
+    items: sorted.slice(offset, offset + limit),
+    total: sorted.length,
     page,
     limit,
     source: "static-local",
@@ -87,6 +96,7 @@ function renderIndex(items) {
     age: "",
     category: "",
     sort: "latest",
+    sortDir: "desc",
     page: 1,
     limit: 6,
   };
@@ -97,6 +107,7 @@ function renderIndex(items) {
     state.age = params.get("age") || "";
     state.category = params.get("category") || "";
     state.sort = params.get("sort") || "latest";
+    state.sortDir = params.get("sort_dir") || "desc";
     const page = Number.parseInt(params.get("page") || "1", 10);
     state.page = Number.isFinite(page) && page > 0 ? page : 1;
   }
@@ -107,6 +118,7 @@ function renderIndex(items) {
     if (state.age) params.set("age", state.age); else params.delete("age");
     if (state.category) params.set("category", state.category); else params.delete("category");
     if (state.sort && state.sort !== "latest") params.set("sort", state.sort); else params.delete("sort");
+    if (state.sortDir && state.sortDir !== "desc") params.set("sort_dir", state.sortDir); else params.delete("sort_dir");
     if (state.page > 1) params.set("page", String(state.page)); else params.delete("page");
     const query = params.toString();
     const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}`;
@@ -181,6 +193,7 @@ function renderIndex(items) {
     state.age = document.getElementById("filter-age")?.value || state.age;
     state.category = document.getElementById("filter-category")?.value || state.category;
     state.sort = document.getElementById("sort-by")?.value || state.sort;
+    state.sortDir = document.getElementById("sort-dir")?.value || state.sortDir;
 
     let payload = {
       items,
@@ -218,12 +231,14 @@ function renderIndex(items) {
   const filterAge = document.getElementById("filter-age");
   const filterCat = document.getElementById("filter-category");
   const sortBy = document.getElementById("sort-by");
+  const sortDir = document.getElementById("sort-dir");
 
   hydrateStateFromUrl();
   if (searchInput) searchInput.value = state.q;
   if (filterAge) filterAge.value = state.age;
   if (filterCat) filterCat.value = state.category;
   if (sortBy) sortBy.value = state.sort;
+  if (sortDir) sortDir.value = state.sortDir;
 
   applyFilters();
 
@@ -231,6 +246,7 @@ function renderIndex(items) {
   if (filterAge) filterAge.addEventListener("change", resetAndApply);
   if (filterCat) filterCat.addEventListener("change", resetAndApply);
   if (sortBy) sortBy.addEventListener("change", resetAndApply);
+  if (sortDir) sortDir.addEventListener("change", resetAndApply);
   if (pagerPrev) pagerPrev.addEventListener("click", () => goPage(-1));
   if (pagerNext) pagerNext.addEventListener("click", () => goPage(1));
 }
