@@ -25,6 +25,12 @@
     .meta { color: #5a667b; }
     ul { padding-left: 18px; }
     #app-error { color: #b42318; }
+    .score-bars { display: grid; gap: 8px; margin-top: 6px; }
+    .score-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #5a667b; }
+    .score-row span:first-child { width: 56px; flex-shrink: 0; }
+    .bar-track { flex: 1; height: 8px; background: #dde4f2; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; background: #0d8bff; }
+    .score-val { width: 26px; text-align: right; font-weight: 700; color: #1f2733; }
   </style>
 </head>
 <body>

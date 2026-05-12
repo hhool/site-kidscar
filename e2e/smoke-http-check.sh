@@ -10,7 +10,11 @@ python3 -m http.server "$PORT" >/tmp/site-kidscar-smoke.log 2>&1 &
 SERVER_PID=$!
 trap 'kill "$SERVER_PID" >/dev/null 2>&1 || true' EXIT
 
-sleep 1
+# Wait until server is ready (up to 10 seconds)
+for i in $(seq 1 20); do
+  curl -fs "$BASE_URL/index.html" >/dev/null 2>&1 && break
+  sleep 0.5
+done
 
 curl -fsS "$BASE_URL/index.html" | grep -q "全球童车评测平台"
 curl -fsS "$BASE_URL/review-detail.html?slug=urban-lite-360-2026" | grep -q "detail-root"

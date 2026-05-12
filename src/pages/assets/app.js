@@ -27,6 +27,20 @@ function renderIndex(items) {
       return;
     }
     if (noResults) noResults.style.display = "none";
+
+    function scoreBars(scores) {
+      if (!scores) return "";
+      const dims = [["安全", scores.safety], ["操控", scores.handling], ["便携", scores.portability], ["性价比", scores.value]];
+      const rows = dims.map(([label, v]) =>
+        `<div class="score-row">
+          <span>${label}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${v * 10}%"></div></div>
+          <span class="score-val">${v}</span>
+        </div>`
+      ).join("");
+      return `<div class="score-bars">${rows}</div>`;
+    }
+
     list.innerHTML = filtered
       .map((item) => {
         const detailHref = `review-detail.html?slug=${encodeURIComponent(item.slug)}`;
@@ -36,6 +50,7 @@ function renderIndex(items) {
             <h3>${item.title_zh}</h3>
             <p>${item.summary_zh}</p>
             <p class="meta">${item.age_range} | ${item.weight_range}</p>
+            ${scoreBars(item.scores)}
             <div class="actions">
               <a class="btn" href="${detailHref}">查看详情</a>
               <a class="btn secondary" href="${compareHref}">加入对比</a>
@@ -138,12 +153,14 @@ function renderDetail(items) {
     ${item.scores ? `
     <section class="card">
       <h2>评分</h2>
-      <ul>
-        <li>安全: ${item.scores.safety}/10</li>
-        <li>操控: ${item.scores.handling}/10</li>
-        <li>便携: ${item.scores.portability}/10</li>
-        <li>性价比: ${item.scores.value}/10</li>
-      </ul>
+      <div class="score-bars">
+        ${[["安全", item.scores.safety], ["操控", item.scores.handling], ["便携", item.scores.portability], ["性价比", item.scores.value]].map(([label, v]) => `
+        <div class="score-row">
+          <span>${label}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${v * 10}%"></div></div>
+          <span class="score-val">${v}</span>
+        </div>`).join("")}
+      </div>
     </section>` : ""}
     <section class="card">
       <h2>来源信息</h2>
