@@ -8,7 +8,7 @@
     "build": "bash scripts/build-reviews-json.sh",
     "sitemap": "bash scripts/build-sitemap.sh",
     "audit": "bash scripts/audit-reviews.sh",
-    "validate": "bash scripts/validate-review-json.sh",
+    "validate": "for f in data/reviews/*.json; do bash scripts/validate-review-json.sh \"$f\"; done",
     "serve": "bash scripts/serve-pages.sh",
     "smoke": "bash e2e/smoke-http-check.sh",
     "preflight": "npm run build && npm run sitemap && npm run audit && npm run validate",

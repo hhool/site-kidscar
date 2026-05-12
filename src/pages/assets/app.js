@@ -1,9 +1,19 @@
 async function loadReviews() {
-  const response = await fetch("assets/reviews.json");
-  if (!response.ok) {
-    throw new Error("Failed to load reviews.json");
+  // Prefer dynamic API when available (Vercel/Neon), fallback to static JSON.
+  try {
+    const apiResponse = await fetch("/api/reviews");
+    if (apiResponse.ok) {
+      return apiResponse.json();
+    }
+  } catch (_err) {
+    // Ignore and continue with static fallback.
   }
-  return response.json();
+
+  const staticResponse = await fetch("assets/reviews.json");
+  if (!staticResponse.ok) {
+    throw new Error("Failed to load review data");
+  }
+  return staticResponse.json();
 }
 
 function queryParam(key) {
