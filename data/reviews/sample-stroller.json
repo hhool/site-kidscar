@@ -8,6 +8,8 @@
   "weight_range": "0-22kg",
   "source_url": "https://example.com/sample-compact-stroller-spec",
   "source_note": "Manufacturer spec page snapshot and manual PDF",
+  "brand": "BabyComfort",
+  "category": "lightweight",
   "needs_verification": true,
   "verified_at": "2026-05-12",
   "scores": {

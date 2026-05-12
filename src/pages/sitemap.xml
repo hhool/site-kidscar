@@ -9,6 +9,24 @@
   </url>
 
   <url>
+    <loc>https://www.site-kidscar.com/review/city-cruiser-pro-2026</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.site-kidscar.com/review/eco-rider-bamboo-2026</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.site-kidscar.com/review/nano-fold-ultra-2026</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
     <loc>https://www.site-kidscar.com/review/sample-compact-stroller-2026</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -16,6 +34,12 @@
 
   <url>
     <loc>https://www.site-kidscar.com/review/trail-pro-x-2026</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.site-kidscar.com/review/twin-cruiser-duo-2026</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

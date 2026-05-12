@@ -8,6 +8,8 @@
   "weight_range": "0-22kg",
   "source_url": "https://example.com/urban-lite-360-spec",
   "source_note": "Brand specification page and user manual",
+  "brand": "UrbanKids",
+  "category": "lightweight",
   "needs_verification": true,
   "verified_at": "2026-05-12",
   "scores": {

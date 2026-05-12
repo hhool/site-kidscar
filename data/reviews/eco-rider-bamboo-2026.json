@@ -1,0 +1,21 @@
+{
+  "slug": "eco-rider-bamboo-2026",
+  "title_zh": "Eco Rider Bamboo 环保竹纤维童车评测",
+  "title_en": "Eco Rider Bamboo Sustainable Stroller Review",
+  "summary_zh": "车架采用再生铝合金，座布由有机竹纤维制成，通过 OEKO-TEX 认证，绿色家庭首选。",
+  "summary_en": "Recycled aluminium frame with organic bamboo-fibre seat fabric certified by OEKO-TEX — the sustainable choice for eco-conscious families.",
+  "brand": "EcoRider",
+  "category": "eco",
+  "age_range": "3 months - 4 years",
+  "weight_range": "0-22kg",
+  "source_url": "https://example.com/eco-rider-bamboo-spec",
+  "source_note": "Brand sustainability report and OEKO-TEX certification page",
+  "needs_verification": false,
+  "verified_at": "2026-05-12",
+  "scores": {
+    "safety": 8,
+    "handling": 7,
+    "portability": 7,
+    "value": 9
+  }
+}

@@ -64,13 +64,15 @@ function renderIndex(items) {
   function applyFilters() {
     const query = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
     const ageFilter = document.getElementById("filter-age")?.value || "";
+    const catFilter = document.getElementById("filter-category")?.value || "";
     const filtered = items.filter((item) => {
       const matchText = !query ||
         item.title_zh.toLowerCase().includes(query) ||
         item.summary_zh.toLowerCase().includes(query) ||
         (item.title_en && item.title_en.toLowerCase().includes(query));
       const matchAge = !ageFilter || item.age_range === ageFilter;
-      return matchText && matchAge;
+      const matchCat = !catFilter || item.category === catFilter;
+      return matchText && matchAge && matchCat;
     });
     buildCards(filtered);
   }
@@ -79,8 +81,10 @@ function renderIndex(items) {
 
   const searchInput = document.getElementById("search-input");
   const filterAge = document.getElementById("filter-age");
+  const filterCat = document.getElementById("filter-category");
   if (searchInput) searchInput.addEventListener("input", applyFilters);
   if (filterAge) filterAge.addEventListener("change", applyFilters);
+  if (filterCat) filterCat.addEventListener("change", applyFilters);
 }
 
 function injectJsonLd(item) {

@@ -1,0 +1,21 @@
+{
+  "slug": "city-cruiser-pro-2026",
+  "title_zh": "City Cruiser Pro 城市旗舰童车评测",
+  "title_en": "City Cruiser Pro Urban Flagship Stroller Review",
+  "summary_zh": "City Cruiser Pro 采用铝合金车架与三挡避震，城市路面操控一流，自立折叠不占空间。",
+  "summary_en": "City Cruiser Pro features an aluminium frame with three-stage suspension for top-tier city handling and self-standing fold.",
+  "brand": "CityStar",
+  "category": "urban",
+  "age_range": "0 - 4 years",
+  "weight_range": "0-22kg",
+  "source_url": "https://example.com/city-cruiser-pro-spec",
+  "source_note": "Brand spec page and independent lab report",
+  "needs_verification": false,
+  "verified_at": "2026-05-12",
+  "scores": {
+    "safety": 9,
+    "handling": 9,
+    "portability": 7,
+    "value": 7
+  }
+}

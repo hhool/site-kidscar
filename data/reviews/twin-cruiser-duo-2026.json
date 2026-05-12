@@ -1,0 +1,21 @@
+{
+  "slug": "twin-cruiser-duo-2026",
+  "title_zh": "Twin Cruiser Duo 双胞胎并排童车评测",
+  "title_en": "Twin Cruiser Duo Side-by-Side Twin Stroller Review",
+  "summary_zh": "并排双座设计，独立靠背角度调节，门宽适配性好，双宝出行神器。",
+  "summary_en": "Side-by-side twin seats with independent recline angles and wide doorway clearance — the go-to for families with two young children.",
+  "brand": "DuoRide",
+  "category": "twin",
+  "age_range": "0 - 4 years",
+  "weight_range": "0-2×20kg",
+  "source_url": "https://example.com/twin-cruiser-duo-spec",
+  "source_note": "Distributor product sheet and parent community user tests",
+  "needs_verification": true,
+  "verified_at": "2026-05-12",
+  "scores": {
+    "safety": 9,
+    "handling": 7,
+    "portability": 5,
+    "value": 7
+  }
+}

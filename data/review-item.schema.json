@@ -43,6 +43,13 @@
       "type": "string",
       "format": "uri"
     },
+    "brand": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["lightweight", "urban", "all-terrain", "travel", "twin", "eco"]
+    },
     "source_note": {
       "type": "string"
     },

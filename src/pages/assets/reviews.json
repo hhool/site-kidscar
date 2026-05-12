@@ -1,5 +1,68 @@
 [
   {
+    "slug": "city-cruiser-pro-2026",
+    "title_zh": "City Cruiser Pro 城市旗舰童车评测",
+    "title_en": "City Cruiser Pro Urban Flagship Stroller Review",
+    "summary_zh": "City Cruiser Pro 采用铝合金车架与三挡避震，城市路面操控一流，自立折叠不占空间。",
+    "summary_en": "City Cruiser Pro features an aluminium frame with three-stage suspension for top-tier city handling and self-standing fold.",
+    "brand": "CityStar",
+    "category": "urban",
+    "age_range": "0 - 4 years",
+    "weight_range": "0-22kg",
+    "source_url": "https://example.com/city-cruiser-pro-spec",
+    "source_note": "Brand spec page and independent lab report",
+    "needs_verification": false,
+    "verified_at": "2026-05-12",
+    "scores": {
+      "safety": 9,
+      "handling": 9,
+      "portability": 7,
+      "value": 7
+    }
+  },
+  {
+    "slug": "eco-rider-bamboo-2026",
+    "title_zh": "Eco Rider Bamboo 环保竹纤维童车评测",
+    "title_en": "Eco Rider Bamboo Sustainable Stroller Review",
+    "summary_zh": "车架采用再生铝合金，座布由有机竹纤维制成，通过 OEKO-TEX 认证，绿色家庭首选。",
+    "summary_en": "Recycled aluminium frame with organic bamboo-fibre seat fabric certified by OEKO-TEX — the sustainable choice for eco-conscious families.",
+    "brand": "EcoRider",
+    "category": "eco",
+    "age_range": "3 months - 4 years",
+    "weight_range": "0-22kg",
+    "source_url": "https://example.com/eco-rider-bamboo-spec",
+    "source_note": "Brand sustainability report and OEKO-TEX certification page",
+    "needs_verification": false,
+    "verified_at": "2026-05-12",
+    "scores": {
+      "safety": 8,
+      "handling": 7,
+      "portability": 7,
+      "value": 9
+    }
+  },
+  {
+    "slug": "nano-fold-ultra-2026",
+    "title_zh": "Nano Fold Ultra 超轻登机童车评测",
+    "title_en": "Nano Fold Ultra Cabin-Carry Stroller Review",
+    "summary_zh": "仅 5.8 kg，一秒折叠，符合主流航空随身标准，远途旅行家庭首选。",
+    "summary_en": "Weighing only 5.8 kg with a one-second fold that meets major airline carry-on specs, a top pick for travelling families.",
+    "brand": "NanoGo",
+    "category": "travel",
+    "age_range": "6 months - 3 years",
+    "weight_range": "0-18kg",
+    "source_url": "https://example.com/nano-fold-ultra-spec",
+    "source_note": "Manufacturer press kit and airline dimension verification",
+    "needs_verification": false,
+    "verified_at": "2026-05-12",
+    "scores": {
+      "safety": 7,
+      "handling": 7,
+      "portability": 10,
+      "value": 8
+    }
+  },
+  {
     "slug": "sample-compact-stroller-2026",
     "title_zh": "Sample 轻便折叠童车 2026 评测",
     "title_en": "Sample Compact Stroller 2026 Review",
@@ -9,6 +72,8 @@
     "weight_range": "0-22kg",
     "source_url": "https://example.com/sample-compact-stroller-spec",
     "source_note": "Manufacturer spec page snapshot and manual PDF",
+    "brand": "BabyComfort",
+    "category": "lightweight",
     "needs_verification": true,
     "verified_at": "2026-05-12",
     "scores": {
@@ -28,12 +93,35 @@
     "weight_range": "0-25kg",
     "source_url": "https://example.com/trail-pro-x-spec",
     "source_note": "Official product brochure and distributor FAQ",
+    "brand": "TrailGear",
+    "category": "all-terrain",
     "needs_verification": false,
     "verified_at": "2026-05-12",
     "scores": {
       "safety": 9,
       "handling": 8,
       "portability": 6,
+      "value": 7
+    }
+  },
+  {
+    "slug": "twin-cruiser-duo-2026",
+    "title_zh": "Twin Cruiser Duo 双胞胎并排童车评测",
+    "title_en": "Twin Cruiser Duo Side-by-Side Twin Stroller Review",
+    "summary_zh": "并排双座设计，独立靠背角度调节，门宽适配性好，双宝出行神器。",
+    "summary_en": "Side-by-side twin seats with independent recline angles and wide doorway clearance — the go-to for families with two young children.",
+    "brand": "DuoRide",
+    "category": "twin",
+    "age_range": "0 - 4 years",
+    "weight_range": "0-2×20kg",
+    "source_url": "https://example.com/twin-cruiser-duo-spec",
+    "source_note": "Distributor product sheet and parent community user tests",
+    "needs_verification": true,
+    "verified_at": "2026-05-12",
+    "scores": {
+      "safety": 9,
+      "handling": 7,
+      "portability": 5,
       "value": 7
     }
   },
@@ -47,6 +135,8 @@
     "weight_range": "0-22kg",
     "source_url": "https://example.com/urban-lite-360-spec",
     "source_note": "Brand specification page and user manual",
+    "brand": "UrbanKids",
+    "category": "lightweight",
     "needs_verification": true,
     "verified_at": "2026-05-12",
     "scores": {

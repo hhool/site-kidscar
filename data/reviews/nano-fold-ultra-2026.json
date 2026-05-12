@@ -1,0 +1,21 @@
+{
+  "slug": "nano-fold-ultra-2026",
+  "title_zh": "Nano Fold Ultra 超轻登机童车评测",
+  "title_en": "Nano Fold Ultra Cabin-Carry Stroller Review",
+  "summary_zh": "仅 5.8 kg，一秒折叠，符合主流航空随身标准，远途旅行家庭首选。",
+  "summary_en": "Weighing only 5.8 kg with a one-second fold that meets major airline carry-on specs, a top pick for travelling families.",
+  "brand": "NanoGo",
+  "category": "travel",
+  "age_range": "6 months - 3 years",
+  "weight_range": "0-18kg",
+  "source_url": "https://example.com/nano-fold-ultra-spec",
+  "source_note": "Manufacturer press kit and airline dimension verification",
+  "needs_verification": false,
+  "verified_at": "2026-05-12",
+  "scores": {
+    "safety": 7,
+    "handling": 7,
+    "portability": 10,
+    "value": 8
+  }
+}
