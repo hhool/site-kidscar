@@ -4,6 +4,8 @@
  * Query params:
  *   ?category=urban   – filter by category
  *   ?q=nano           – full-text search on title_zh / title_en / summary_zh
+ *   ?sort=latest|safety_desc|value_desc
+ *   ?sort_dir=asc|desc
  *
  * Falls back to the static reviews.json when DATABASE_URL is not configured.
  */
@@ -55,17 +57,23 @@ function parseSort(value) {
   return allowed.has(v) ? v : "latest";
 }
 
-function applySort(items, sort) {
+function parseSortDir(value) {
+  const v = String(value || "desc").toLowerCase();
+  return v === "asc" ? "asc" : "desc";
+}
+
+function applySort(items, sort, sortDir) {
   const list = [...items];
+  const dir = sortDir === "asc" ? 1 : -1;
   if (sort === "safety_desc") {
-    list.sort((a, b) => (b.scores?.safety || 0) - (a.scores?.safety || 0));
+    list.sort((a, b) => ((a.scores?.safety || 0) - (b.scores?.safety || 0)) * dir);
     return list;
   }
   if (sort === "value_desc") {
-    list.sort((a, b) => (b.scores?.value || 0) - (a.scores?.value || 0));
+    list.sort((a, b) => ((a.scores?.value || 0) - (b.scores?.value || 0)) * dir);
     return list;
   }
-  list.sort((a, b) => String(b.verified_at || "").localeCompare(String(a.verified_at || "")));
+  list.sort((a, b) => String(a.verified_at || "").localeCompare(String(b.verified_at || "")) * dir);
   return list;
 }
 
@@ -80,6 +88,7 @@ export default async function handler(req, res) {
   const age = asSingleValue(req.query.age) || "";
   const q = asSingleValue(req.query.q) || "";
   const sort = parseSort(asSingleValue(req.query.sort));
+  const sortDir = parseSortDir(asSingleValue(req.query.sort_dir));
   const page = parsePositiveInt(asSingleValue(req.query.page), 1, 100000);
   const limit = parsePositiveInt(asSingleValue(req.query.limit), 20, 100);
   const offset = (page - 1) * limit;
@@ -188,7 +197,7 @@ export default async function handler(req, res) {
     }
 
     // Normalise DB rows to match static JSON shape (scores object)
-    const data = applySort(rows.map(normaliseRow), sort);
+    const data = applySort(rows.map(normaliseRow), sort, sortDir);
     const paged = data.slice(offset, offset + limit);
     res.setHeader("X-Total-Count", String(total));
     res.setHeader("X-Page", String(page));
@@ -197,7 +206,7 @@ export default async function handler(req, res) {
     return res.status(200).json(paged);
   } catch (_dbErr) {
     // DB unavailable – serve static file
-    const items = applySort(applyQueryFilters(staticFallback(), { category, age, q }), sort);
+    const items = applySort(applyQueryFilters(staticFallback(), { category, age, q }), sort, sortDir);
     const total = items.length;
     const paged = items.slice(offset, offset + limit);
     res.setHeader("X-Total-Count", String(total));

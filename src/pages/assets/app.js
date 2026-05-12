@@ -4,6 +4,7 @@ async function loadReviews(filters = {}) {
   if (filters.category) params.set("category", filters.category);
   if (filters.age) params.set("age", filters.age);
   if (filters.sort) params.set("sort", filters.sort);
+  if (filters.sortDir) params.set("sort_dir", filters.sortDir);
   const page = Number(filters.page || 1);
   const limit = Number(filters.limit || 20);
   params.set("page", String(page));
@@ -343,7 +344,10 @@ function renderCompare(items) {
 
   // Populate pickers if present
   if (pickerA && pickerB) {
-    const options = items.map((it) =>
+    const compareCandidates = [...items].sort(
+      (a, b) => (b.scores?.safety || 0) - (a.scores?.safety || 0)
+    );
+    const options = compareCandidates.map((it) =>
       `<option value="${it.slug}">${it.title_zh}</option>`
     ).join("");
     pickerA.innerHTML = options;
